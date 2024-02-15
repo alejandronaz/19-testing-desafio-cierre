@@ -55,8 +55,11 @@ func TestGet(t *testing.T) {
 			}
 		}`
 		require.JSONEq(t, expectedBody, res.Body.String())
-		// verify SearchProducts was called
-		require.Equal(t, 1, rp.Calls.SearchProducts)
+		// verify SearchProducts was called once
+		require.Equal(t, 1, rp.MethodCallsCount["SearchProducts"])
+		// verify SearchProducts was called with the correct arguments
+		args := repository.Args{internal.ProductQuery{Id: 1}}
+		require.Equal(t, args, rp.MethodCallsArgs["SearchProducts"][0])
 	})
 	t.Run("Error get - invalid id", func(t *testing.T) {
 		// arrange
@@ -97,5 +100,7 @@ func TestGet(t *testing.T) {
 
 		// assert
 		require.Equal(t, http.StatusInternalServerError, res.Code)
+		// verify SearchProducts was called once
+		require.Equal(t, 1, rp.MethodCallsCount["SearchProducts"])
 	})
 }
